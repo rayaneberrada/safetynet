@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Firestation {
-    private String address;
-    private String station;
+    String address;
+    String station;
 }

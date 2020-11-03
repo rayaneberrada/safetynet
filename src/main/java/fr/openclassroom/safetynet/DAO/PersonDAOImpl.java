@@ -53,7 +53,7 @@ public class PersonDAOImpl implements PersonDAO{
     public List<Person> addPerson(Person person){
         boolean added = this.persons.add(person);
         if (added) {
-            logger.info(person + " a bien été ajouté");
+            logger.info(person.getFirstName() + " " + person.getLastName() + " a bien été ajouté");
         }   else {
             logger.error("Impossible d'ajouter la personne envoyée");
         }

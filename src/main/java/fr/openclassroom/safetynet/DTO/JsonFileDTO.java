@@ -2,6 +2,7 @@ package fr.openclassroom.safetynet.DTO;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.openclassroom.safetynet.beans.MedicalRecord;
 import fr.openclassroom.safetynet.beans.Person;
 import fr.openclassroom.safetynet.controllers.PersonController;
 import org.json.simple.JSONArray;
@@ -66,5 +67,18 @@ public class JsonFileDTO {
         }
         logger.info("Il y a " + persons.size() + " personnes dans la liste");
         return persons;
+    }
+
+    public List<MedicalRecord> getMedicalRecords() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(String.valueOf(jsonObject));
+        JsonNode jsonArray = jsonNode.get("persons");
+        List<MedicalRecord> medicalRecords = new ArrayList<>();
+        for(JsonNode person: jsonArray) {
+            String personJson = mapper.writeValueAsString(person);
+            medicalRecords.add(mapper.readValue(personJson, MedicalRecord.class));
+        }
+        logger.info("Il y a " + medicalRecords.size() + " personnes dans la liste");
+        return medicalRecords;
     }
 }
