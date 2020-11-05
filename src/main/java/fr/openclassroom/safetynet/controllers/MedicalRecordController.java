@@ -1,14 +1,15 @@
 package fr.openclassroom.safetynet.controllers;
 
+import fr.openclassroom.safetynet.DAO.MedicalRecordDAO;
 import fr.openclassroom.safetynet.DAO.MedicalRecordDAOImpl;
-import fr.openclassroom.safetynet.DAO.PersonDAOImpl;
-import fr.openclassroom.safetynet.beans.Person;
+import fr.openclassroom.safetynet.beans.MedicalRecord;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,28 +18,28 @@ public class MedicalRecordController {
     private static Logger logger = LoggerFactory.getLogger(PersonController.class);
 
     @Autowired
-    MedicalRecordDAOImpl medicalRecordDAOImpl;
+    MedicalRecordDAO medicalRecordDAOImpl;
 
-    @GetMapping(value = "/person")
-    public List<Person> getPerson() {
-        return personDAOimpl.getPersons();
+    @GetMapping(value = "/medicalrecord")
+    public List<MedicalRecord> getMedicalRecords() {
+        return medicalRecordDAOImpl.getMedicalRecords();
     }
 
-    @DeleteMapping("/person")
-    public List<Person> removePerson(@RequestBody Person person) {
-        logger.info(String.valueOf(person));
-        return personDAOimpl.deletePerson(person);
+    @DeleteMapping("/medicalrecord")
+    public List<MedicalRecord> removePerson(@RequestBody MedicalRecord medicalRecord) {
+        logger.info(String.valueOf(medicalRecord));
+        return medicalRecordDAOImpl.deleteMedicalRecord(medicalRecord);
     }
 
-    @PostMapping("/person")
-    public List<Person> addPerson(@RequestBody Person person) {
-        logger.info(String.valueOf(person));
-        return personDAOimpl.addPerson(person);
+    @PostMapping("/medicalrecord")
+    public List<MedicalRecord> addPerson(@RequestBody MedicalRecord medicalRecord) throws IOException, ParseException {
+        logger.info(String.valueOf(medicalRecord));
+        return medicalRecordDAOImpl.addMedicalRecord(medicalRecord);
     }
 
-    @PutMapping("/person")
-    public List<Person> updatePerson(@RequestBody Person person) {
-        logger.info(String.valueOf(person));
-        return personDAOimpl.updatePerson(person);
+    @PutMapping("/medicalrecord")
+    public List<MedicalRecord> updatePerson(@RequestBody MedicalRecord medicalRecord) throws IOException, ParseException {
+        logger.info(String.valueOf(medicalRecord));
+        return medicalRecordDAOImpl.updateMedicalRecord(medicalRecord);
     }
 }

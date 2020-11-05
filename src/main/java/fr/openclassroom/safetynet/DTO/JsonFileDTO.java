@@ -1,7 +1,10 @@
 package fr.openclassroom.safetynet.DTO;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import fr.openclassroom.safetynet.beans.Firestation;
 import fr.openclassroom.safetynet.beans.MedicalRecord;
 import fr.openclassroom.safetynet.beans.Person;
 import fr.openclassroom.safetynet.controllers.PersonController;
@@ -69,16 +72,42 @@ public class JsonFileDTO {
         return persons;
     }
 
+    public List<Firestation> getFirestations() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(String.valueOf(jsonObject));
+        JsonNode jsonArray = jsonNode.get("firestations");
+        List<Firestation> firestations = new ArrayList<>();
+        for(JsonNode firestation: jsonArray) {
+            String firestationJson = mapper.writeValueAsString(firestation);
+            logger.info(firestationJson);
+            firestations.add(mapper.readValue(firestationJson, Firestation.class));
+        }
+        logger.info("Il y a " + firestations.size() + " firestations dans la liste");
+        return firestations;
+    }
+
     public List<MedicalRecord> getMedicalRecords() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(String.valueOf(jsonObject));
-        JsonNode jsonArray = jsonNode.get("persons");
+        ObjectReader reader = mapper.readerFor(new TypeReference<List<String>>() {
+        });
+        JsonNode jsonArray = jsonNode.get("medicalrecords");
         List<MedicalRecord> medicalRecords = new ArrayList<>();
-        for(JsonNode person: jsonArray) {
-            String personJson = mapper.writeValueAsString(person);
-            medicalRecords.add(mapper.readValue(personJson, MedicalRecord.class));
+        for(JsonNode medicalRecordJson: jsonArray) {
+            MedicalRecord medicalRecord = new MedicalRecord();
+            medicalRecord.setFirstName(medicalRecordJson.get("firstName").asText());
+            medicalRecord.setLastName(medicalRecordJson.get("lastName").asText());
+            medicalRecord.setBirthdate(medicalRecordJson.get("birthdate").asText());
+            medicalRecord.setAllergies(reader.readValue(medicalRecordJson.get("allergies")));
+            medicalRecord.setMedications(reader.readValue(medicalRecordJson.get("medications")));
+            medicalRecords.add(medicalRecord);
         }
-        logger.info("Il y a " + medicalRecords.size() + " personnes dans la liste");
-        return medicalRecords;
+        logger.info("Il y a " + medicalRecords.size() + " dossiers médicaux");
+        if (medicalRecords.size() > 0) {
+            return medicalRecords;
+        }else{
+            logger.error("No medical record parsed");
+            return null;
+        }
     }
 }
