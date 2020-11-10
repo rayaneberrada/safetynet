@@ -10,14 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class PersonDAOImpl implements PersonDAO{
 
     private static Logger logger = LoggerFactory.getLogger(PersonDAOImpl.class);
 
-    public List<Person> persons;
+    public Map<String, Person> persons;
 
     @Autowired
     public PersonDAOImpl(JsonFileDTO jsonFileDTO){
@@ -31,12 +33,12 @@ public class PersonDAOImpl implements PersonDAO{
 
     @Override
     public List<Person> getPersons() {
-        return this.persons;
+        return new ArrayList<>(this.persons.values());
     }
 
     @Override
     public List<Person> updatePerson(Person personToUpdate){
-        for(Person person: this.persons) {
+        for(Person person: this.persons.values()) {
             if(personToUpdate.getFirstName().equals(person.getFirstName())
                     && personToUpdate.getLastName().equals(person.getLastName())) {
                 person.setAddress(personToUpdate.getAddress());
@@ -46,23 +48,23 @@ public class PersonDAOImpl implements PersonDAO{
                 person.setZip(personToUpdate.getZip());
             }
         }
-        return this.persons;
+        return new ArrayList<>(this.persons.values());
     }
 
     @Override
     public List<Person> addPerson(Person person){
-        boolean added = this.persons.add(person);
-        if (added) {
+        try{
+            this.persons.put(person.getFirstName() + " " + person.getLastName(), person);
             logger.info(person.getFirstName() + " " + person.getLastName() + " a bien été ajouté");
-        }   else {
-            logger.error("Impossible d'ajouter la personne envoyée");
+        }   catch(Exception e) {
+            logger.error("Impossible d'ajouter la personne envoyée", e);
         }
-        return this.persons;
+        return new ArrayList<>(this.persons.values());
     }
 
     @Override
     public List<Person> deletePerson(Person personToDelete) {
-        boolean deleted = this.persons.removeIf(person -> personToDelete.getFirstName().equals(person.getFirstName())
+        boolean deleted = this.persons.values().removeIf(person -> personToDelete.getFirstName().equals(person.getFirstName())
                 && personToDelete.getLastName().equals(person.getLastName()));
         if (deleted) {
             logger.info(personToDelete.getFirstName() + " " + personToDelete.getLastName() + " a bien été supprimé");
@@ -70,7 +72,7 @@ public class PersonDAOImpl implements PersonDAO{
         } else {
             logger.error("Aucune personne ne correspond à " + personToDelete.getFirstName() + " " + personToDelete.getLastName());
         }
-        return this.persons;
+        return new ArrayList<>(this.persons.values());
     }
 }
 

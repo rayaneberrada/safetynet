@@ -3,6 +3,7 @@ package fr.openclassroom.safetynet.controllers;
 import fr.openclassroom.safetynet.DAO.PersonDAO;
 import fr.openclassroom.safetynet.DAO.PersonDAOImpl;
 import fr.openclassroom.safetynet.beans.Person;
+import fr.openclassroom.safetynet.services.DataFilter;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class PersonController {
@@ -21,9 +23,27 @@ public class PersonController {
     @Autowired
     PersonDAO personDAOimpl;
 
+    @Autowired
+    DataFilter dataFilter;
+
     @GetMapping(value = "/person")
-    public List<Person> getPerson() {
+    public List<Person> Person() {
         return personDAOimpl.getPersons();
+    }
+
+    @RequestMapping(value = "/childAlert/{address}")
+    public Map<String, List> childsAtAddress(@PathVariable String address) throws java.text.ParseException {
+        return dataFilter.countChildsAtAddress(address);
+    }
+
+    @RequestMapping(value = "/fire/{address}")
+    public List<List<Object>> PersonsAndMedicalRecordsAndStationNumberOfAddress(@PathVariable String address){
+        return dataFilter.getPersonsMedicalRecordsAndStationNumberOfAddress(address);
+    }
+
+    @GetMapping(value = "/communityEmail")
+    public List<Person> getEmails() {
+        return null;
     }
 
     @DeleteMapping("/person")

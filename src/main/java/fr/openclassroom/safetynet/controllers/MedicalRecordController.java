@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 public class MedicalRecordController {
 
-    private static Logger logger = LoggerFactory.getLogger(PersonController.class);
+    private static Logger logger = LoggerFactory.getLogger(MedicalRecordController.class);
 
     @Autowired
     MedicalRecordDAO medicalRecordDAOImpl;

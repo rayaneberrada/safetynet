@@ -10,14 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class MedicalRecordDAOImpl implements MedicalRecordDAO{
 
-    private static Logger logger = LoggerFactory.getLogger(PersonDAOImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MedicalRecordDAOImpl.class);
 
-    public List<MedicalRecord> medicalRecords;
+    public Map<String, MedicalRecord> medicalRecords;
 
     @Autowired
     public MedicalRecordDAOImpl(JsonFileDTO jsonFileDTO){
@@ -31,7 +34,7 @@ public class MedicalRecordDAOImpl implements MedicalRecordDAO{
 
     @Override
     public List<MedicalRecord> updateMedicalRecord(MedicalRecord recordToUpdate){
-        for(MedicalRecord medicalRecord: this.medicalRecords) {
+        for(MedicalRecord medicalRecord: this.medicalRecords.values()) {
             if(recordToUpdate.getFirstName().equals(medicalRecord.getFirstName())
                     && recordToUpdate.getLastName().equals(medicalRecord.getLastName())) {
                 medicalRecord.setBirthdate(recordToUpdate.getBirthdate());
@@ -39,23 +42,23 @@ public class MedicalRecordDAOImpl implements MedicalRecordDAO{
                 medicalRecord.setAllergies(recordToUpdate.getAllergies());
             }
         }
-        return this.medicalRecords;
+        return new ArrayList<>(this.medicalRecords.values());
     }
 
     @Override
     public List<MedicalRecord> addMedicalRecord(MedicalRecord recordToAdd){
         try{
-            this.medicalRecords.add(recordToAdd);
+            this.medicalRecords.put(recordToAdd.getFirstName() + " " + recordToAdd.getLastName(),recordToAdd);
             logger.info(recordToAdd.getFirstName() + " " + recordToAdd.getLastName() + " a bien été ajouté");
         } catch (Exception e){
             logger.error("Impossible d'ajouter la personne envoyée", e);
         }
-        return this.medicalRecords;
+        return new ArrayList<>(this.medicalRecords.values());
     }
 
     @Override
     public List<MedicalRecord> deleteMedicalRecord(MedicalRecord recordToDelete) {
-        boolean deleted = this.medicalRecords.removeIf(person -> recordToDelete.getFirstName().equals(person.getFirstName())
+        boolean deleted = this.medicalRecords.values().removeIf(person -> recordToDelete.getFirstName().equals(person.getFirstName())
                 && recordToDelete.getLastName().equals(person.getLastName()));
         if (deleted) {
             logger.info(recordToDelete.getFirstName() + " " + recordToDelete.getLastName() + " a bien été supprimé");
@@ -63,11 +66,11 @@ public class MedicalRecordDAOImpl implements MedicalRecordDAO{
         } else {
             logger.error("Aucune personne ne correspond à " + recordToDelete.getFirstName() + " " + recordToDelete.getLastName());
         }
-        return this.medicalRecords;
+        return new ArrayList<>(this.medicalRecords.values());
     }
 
     @Override
     public List<MedicalRecord> getMedicalRecords() {
-        return this.medicalRecords;
+        return new ArrayList<>(this.medicalRecords.values());
     }
 }
