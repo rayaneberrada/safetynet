@@ -1,5 +1,6 @@
 package fr.openclassroom.safetynet.beans;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@JsonFilter("medicalFilter")
 public class MedicalRecord {
     @NonNull
     String firstName;

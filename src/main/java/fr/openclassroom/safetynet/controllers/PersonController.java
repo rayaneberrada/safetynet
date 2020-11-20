@@ -1,5 +1,11 @@
 package fr.openclassroom.safetynet.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import fr.openclassroom.safetynet.DAO.PersonDAO;
 import fr.openclassroom.safetynet.DAO.PersonDAOImpl;
 import fr.openclassroom.safetynet.beans.Person;
@@ -19,6 +25,8 @@ import java.util.Map;
 public class PersonController {
 
     private static Logger logger = LoggerFactory.getLogger(PersonController.class);
+    private static ObjectMapper mapper = new ObjectMapper();
+    private static FilterProvider personFilter = new SimpleFilterProvider().addFilter("personFilter", SimpleBeanPropertyFilter.serializeAll());
 
     @Autowired
     PersonDAO personDAOimpl;
@@ -27,40 +35,45 @@ public class PersonController {
     DataFilter dataFilter;
 
     @GetMapping(value = "/person")
-    public List<Person> Person() {
-        return personDAOimpl.getPersons();
+    public String Person() throws JsonProcessingException {
+        return mapper.writer(personFilter).withDefaultPrettyPrinter().writeValueAsString(personDAOimpl.getPersons());
     }
 
-    @RequestMapping(value = "/childAlert/{address}")
-    public Map<String, List> childsAtAddress(@PathVariable String address) throws java.text.ParseException {
+    @RequestMapping(value = "/communityEmail")
+    public Map<String, List<String>> personsEmailAtCity(String city) throws JsonProcessingException{
+        return dataFilter.getPersonsEmailInCity(city);
+    }
+
+    @RequestMapping(value = "/personInfo")
+    public List<JsonNode> personInfo(String firstName, String lastName) throws JsonProcessingException, java.text.ParseException {
+        return dataFilter.getPersonFiltered(firstName, lastName);
+    }
+
+    @RequestMapping(value = "/childAlert")
+    public Map<String, List> childsAtAddress(String address) throws java.text.ParseException, JsonProcessingException {
         return dataFilter.countChildsAtAddress(address);
     }
 
-    @RequestMapping(value = "/fire/{address}")
-    public List<List<Object>> PersonsAndMedicalRecordsAndStationNumberOfAddress(@PathVariable String address){
+    @RequestMapping(value = "/fire")
+    public Map<String, Object> PersonsAndMedicalRecordsAndStationNumberOfAddress(String address) throws JsonProcessingException {
         return dataFilter.getPersonsMedicalRecordsAndStationNumberOfAddress(address);
     }
 
-    @GetMapping(value = "/communityEmail")
-    public List<Person> getEmails() {
-        return null;
-    }
-
     @DeleteMapping("/person")
-    public List<Person> removePerson(@RequestBody Person person) {
+    public String removePerson(@RequestBody Person person) throws JsonProcessingException {
         logger.info(String.valueOf(person));
-        return personDAOimpl.deletePerson(person);
+        return mapper.writer(personFilter).withDefaultPrettyPrinter().writeValueAsString(personDAOimpl.deletePerson(person));
     }
 
     @PostMapping("/person")
-    public List<Person> addPerson(@RequestBody Person person) throws IOException, ParseException {
+    public String addPerson(@RequestBody Person person) throws IOException, ParseException {
         logger.info(String.valueOf(person));
-        return personDAOimpl.addPerson(person);
+        return mapper.writer(personFilter).withDefaultPrettyPrinter().writeValueAsString(personDAOimpl.addPerson(person));
     }
 
     @PutMapping("/person")
-    public List<Person> updatePerson(@RequestBody Person person) throws IOException, ParseException {
+    public String updatePerson(@RequestBody Person person) throws IOException, ParseException {
         logger.info(String.valueOf(person));
-        return personDAOimpl.updatePerson(person);
+        return mapper.writer(personFilter).withDefaultPrettyPrinter().writeValueAsString(personDAOimpl.updatePerson(person));
     }
 }

@@ -1,5 +1,6 @@
 package fr.openclassroom.safetynet.beans;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import org.springframework.lang.NonNull;
 @Getter
 @Setter
 @ToString
+@JsonFilter("personFilter")
 public class Person {
     @NonNull
     String firstName;

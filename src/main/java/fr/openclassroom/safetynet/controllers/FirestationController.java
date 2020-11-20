@@ -1,5 +1,7 @@
 package fr.openclassroom.safetynet.controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,27 +32,21 @@ public class FirestationController {
     @Autowired
     DataFilter dataFilter;
 
+
     @GetMapping(value = "/firestation")
-    public List<Firestation> getFirestation() {
-        return firestationDAO.getFirestations();
+    public Map<String, Object> getFirestation(int stationNumber) throws java.text.ParseException, JsonProcessingException {
+            return dataFilter.countAdultAndChildPerStation(stationNumber);
     }
 
-    @RequestMapping(value = "/firestation/{stationNumber}")
-    public Map<String, Object> AdultAndChildPerStation(@PathVariable int stationNumber) throws java.text.ParseException {
-        return dataFilter.countAdultAndChildPerStation(stationNumber);
-    }
-
-    @RequestMapping(value = "/flood/stations/{stations}")
-    public Map<String, List<Object>> PersonsAndMedicalRecordPerAddressPerStation(@PathVariable List<Integer> stationsNumbers) throws java.text.ParseException {
-        System.out.println("Il ya qqun?");
-        logger.info("Les stations requêtées sont: " + stationsNumbers);
-        return dataFilter.getPersonsAndMedicalRecordPerAddressPerStation(stationsNumbers);
+    @RequestMapping(value = "/flood/stations")
+    public Map<String, List<JsonNode>> PersonsAndMedicalRecordPerAddressPerStation(String[] stations) throws java.text.ParseException, JsonProcessingException {
+        return dataFilter.getPersonsAndMedicalRecordPerAddressPerStation(stations);
     }
 
 
-    @RequestMapping(value = "/phoneAlert/{stationNumber}")
-    public List<Person> getPersonsPhoneForStation(@PathVariable int stationNumber) throws java.text.ParseException {
-        return dataFilter.getPhoneNumbersForStation(stationNumber);
+    @RequestMapping(value = "/phoneAlert")
+    public Map<String, List<String>> getPersonsPhoneForStation(int firestation) throws java.text.ParseException, JsonProcessingException {
+        return dataFilter.getPhoneNumbersForStation(firestation);
     }
 
     @DeleteMapping("/firestation")
