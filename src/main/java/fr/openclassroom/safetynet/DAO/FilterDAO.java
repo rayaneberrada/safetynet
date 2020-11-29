@@ -1,4 +1,4 @@
-package fr.openclassroom.safetynet.services;
+package fr.openclassroom.safetynet.DAO;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,17 +30,17 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
-public class DataFilter {
+public class FilterDAO {
 
     private static Logger logger = LoggerFactory.getLogger(PersonDAOImpl.class);
 
-    private Map<String, Person> persons;
-    private Map<String, MedicalRecord> medicalRecords;
-    private Map<String, Firestation> fireStations;
-    private ObjectMapper mapper = new ObjectMapper();
+    static Map<String, Person> persons;
+    static Map<String, MedicalRecord> medicalRecords;
+    static Map<String, Firestation> fireStations;
+    static ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public DataFilter(JsonFileDTO jsonFileDTO) throws IOException {
+    public FilterDAO(JsonFileDTO jsonFileDTO) throws IOException {
         persons = jsonFileDTO.getPersons();
         medicalRecords = jsonFileDTO.getMedicalRecords();
         fireStations = jsonFileDTO.getFirestations();
@@ -48,7 +48,7 @@ public class DataFilter {
 
     public Map<String, List<String>> getPersonsEmailInCity(String city) throws JsonProcessingException {
         List<Person> personsAtCity = this.persons.values().stream().filter(person -> person.getCity().equals(city)).collect(Collectors.toList());
-        logger.info("Persons in city: " + personsAtCity );
+        logger.info("Persons in city: " + personsAtCity);
         List<String> personsEmail = personsAtCity.stream().map(person -> person.getEmail()).collect(Collectors.toList());
         return Map.of(city, personsEmail);
     }
@@ -62,15 +62,15 @@ public class DataFilter {
             personsByName = this.persons.values().stream().filter(person -> (lastName).equals(person.getLastName())).collect(Collectors.toList());
         } else if (firstName != null && lastName == null) {
             personsByName = this.persons.values().stream().filter(person -> (firstName).equals(person.getFirstName())).collect(Collectors.toList());
-        }else{
+        } else {
             personsByName = this.persons.values().stream().filter(person -> (firstName + lastName).equals(person.getFirstName() + person.getLastName())).collect(Collectors.toList());
         }
         List<JsonNode> personsJson = this.filterObjectsInJson(personsByName, personFilter);
 
-        for (int i = 0; i < personsByName.size(); i ++){
+        for (int i = 0; i < personsByName.size(); i++) {
             String fullname = personsByName.get(i).getFirstName() + " " + personsByName.get(i).getLastName();
-            ((ObjectNode)personsJson.get(i)).put(fullname, this.filterObjectInJson(this.medicalRecords.get(fullname), medicalFilter));
-            ((ObjectNode)personsJson.get(i)).put("âge: ", this.calculateAge(this.medicalRecords.get(fullname).getBirthdate()));
+            ((ObjectNode) personsJson.get(i)).put(fullname, this.filterObjectInJson(this.medicalRecords.get(fullname), medicalFilter));
+            ((ObjectNode) personsJson.get(i)).put("âge: ", this.calculateAge(this.medicalRecords.get(fullname).getBirthdate()));
         }
         return personsJson;
     }
@@ -82,21 +82,21 @@ public class DataFilter {
         logger.info("Adresse(s) récuérée(s): " + addresses);
         //Rajouter une exception et logger si addresses est vide?
         List<Person> personsAtAdresses = this.persons.values()
-                                            .stream()
-                                            .filter(person -> addresses.contains(person.getAddress()))
-                                            .collect(Collectors.toList());
+                .stream()
+                .filter(person -> addresses.contains(person.getAddress()))
+                .collect(Collectors.toList());
         logger.info("Nombre de personnes aux adresses: " + personsAtAdresses.size());
 
         List<Person> personsOverEighteen = new ArrayList<>();
         List<Person> personsUnderEighteen = new ArrayList<>();
         List<JsonNode> personAtAdressesFiltered = new ArrayList<>();
         FilterProvider personFilter = new SimpleFilterProvider().addFilter("personFilter", SimpleBeanPropertyFilter.filterOutAllExcept("firstName", "lastName", "address", "phone"));
-        for(Person person: personsAtAdresses){
+        for (Person person : personsAtAdresses) {
             String birthDay = this.medicalRecords.get(person.getFirstName() + " " + person.getLastName()).getBirthdate();
             int age = calculateAge(birthDay);
             if (age > 18) {
                 personsOverEighteen.add(person);
-            }   else {
+            } else {
                 personsUnderEighteen.add(person);
             }
             String personAtAdressesJson = mapper.writer(personFilter)
@@ -115,29 +115,32 @@ public class DataFilter {
         return adultAndChildPerStation;
     }
 
-    public Map<String, List>  countChildsAtAddress(String address) throws ParseException, JsonProcessingException {
+    public Map<String, List> countChildsAtAddress(String address) throws ParseException, JsonProcessingException {
         Map<String, List> childsAtAddress = new HashMap<>();
         List<JsonNode> childs = new ArrayList<>();
         List<JsonNode> adults = new ArrayList<>();
+        logger.info(String.valueOf(this.persons));
         List<Person> personsAtAddress = this.persons.values()
-                                                    .stream()
-                                                    .filter(person -> person.getAddress().equals(address))
-                                                    .collect(Collectors.toList());
+                .stream()
+                .filter(person -> person.getAddress().equals(address))
+                .collect(Collectors.toList());
+        logger.info("persons at address: " + personsAtAddress);
 
         List<JsonNode> childsFiltered = new ArrayList<>();
         FilterProvider personFilter = new SimpleFilterProvider().addFilter("personFilter", SimpleBeanPropertyFilter.filterOutAllExcept("firstName", "lastName"));
-        for (Person person: personsAtAddress) {
+        for (Person person : personsAtAddress) {
             String birthDate = this.medicalRecords.get(person.getFirstName() + " " + person.getLastName()).getBirthdate();
+
             String personAtAdressesJson = mapper.writer(personFilter)
                     .withDefaultPrettyPrinter()
                     .writeValueAsString(person);
             JsonNode personJsonObject = mapper.readTree(personAtAdressesJson);
             int age = calculateAge(birthDate);
-            ((ObjectNode)personJsonObject).put("age", age);
+            ((ObjectNode) personJsonObject).put("age", age);
             childsFiltered.add(personJsonObject);
             if (age > 18) {
                 adults.add(personJsonObject);
-            }   else {
+            } else {
                 childs.add(personJsonObject);
             }
 
@@ -155,7 +158,7 @@ public class DataFilter {
 
 
         List<String> phoneNumbers = new ArrayList<>();
-        for (List<Person> personsAtAddress: personsAtAdresses) {
+        for (List<Person> personsAtAddress : personsAtAdresses) {
             personsAtAddress.stream().forEach(person -> phoneNumbers.add(person.getPhone()));
         }
         logger.info("Nombre de personnes aux adresses: " + personsAtAdresses.size());
@@ -166,14 +169,14 @@ public class DataFilter {
         //Modifier en utilisant des maps pour avoir une meilleure visibilitée
         Map<String, Object> personAndMedicalRecordsAndFirestation = new HashMap<>();
         Map<String, MedicalRecord> medicalRecords = this.medicalRecords;
-        List<Person> personsAtAddress  = getPersonsAtAddress(address);
+        List<Person> personsAtAddress = getPersonsAtAddress(address);
         logger.info("People living at address requested: " + personsAtAddress.toString());
 
         FilterProvider personFilter = new SimpleFilterProvider().addFilter("personFilter", SimpleBeanPropertyFilter.filterOutAllExcept("phone"));
         FilterProvider medicalFilter = new SimpleFilterProvider().addFilter("medicalFilter", SimpleBeanPropertyFilter.filterOutAllExcept("medications", "allergies"));
 
         List<JsonNode> personAndMedicalRecord = new ArrayList<>();
-        for(Person person: personsAtAddress){
+        for (Person person : personsAtAddress) {
             String fullName = person.getFirstName() + " " + person.getLastName();
             String personJson = mapper.writer(personFilter)
                     .withDefaultPrettyPrinter()
@@ -208,14 +211,14 @@ public class DataFilter {
 
         FilterProvider personFilter = new SimpleFilterProvider().addFilter("personFilter", SimpleBeanPropertyFilter.filterOutAllExcept("phone", "firstName", "lastName"));
         FilterProvider medicalFilter = new SimpleFilterProvider().addFilter("medicalFilter", SimpleBeanPropertyFilter.filterOutAllExcept("medications", "allergies"));
-        for (String address: firestationsAddresses) {
+        for (String address : firestationsAddresses) {
             List<Person> personsAtAddress = this.getPersonsAtAddress(address);
             List<JsonNode> personsJson = this.filterObjectsInJson(personsAtAddress, personFilter);
 
-            for (JsonNode person: personsJson) {
+            for (JsonNode person : personsJson) {
                 String fullname = person.get("firstName").asText() + " " + person.get("lastName").asText();
-                ((ObjectNode)person).put(fullname, this.filterObjectInJson(this.medicalRecords.get(fullname), medicalFilter));
-                ((ObjectNode)person).put("âge: ", this.calculateAge(this.medicalRecords.get(fullname).getBirthdate()));
+                ((ObjectNode) person).put(fullname, this.filterObjectInJson(this.medicalRecords.get(fullname), medicalFilter));
+                ((ObjectNode) person).put("âge: ", this.calculateAge(this.medicalRecords.get(fullname).getBirthdate()));
             }
             PersonsAndMedicalRecordPerAddressPerStation.put(address, personsJson);
         }
@@ -223,25 +226,25 @@ public class DataFilter {
         return PersonsAndMedicalRecordPerAddressPerStation;
     }
 
-    private List<JsonNode> filterObjectsInJson(List objectsToFilter, FilterProvider filter) throws JsonProcessingException {
+    static List<JsonNode> filterObjectsInJson(List objectsToFilter, FilterProvider filter) throws JsonProcessingException {
         List<JsonNode> objectsJson = new ArrayList<>();
-        for (Object object: objectsToFilter) {
+        for (Object object : objectsToFilter) {
             objectsJson.add(filterObjectInJson(object, filter));
         }
         return objectsJson;
     }
 
-    private JsonNode filterObjectInJson(Object objectToFilter, FilterProvider filter) throws JsonProcessingException {
-        String objectJson = this.mapper.writer(filter)
+    static JsonNode filterObjectInJson(Object objectToFilter, FilterProvider filter) throws JsonProcessingException {
+        String objectJson = mapper.writer(filter)
                 .withDefaultPrettyPrinter()
                 .writeValueAsString(objectToFilter);
         return mapper.readTree(objectJson);
     }
 
-    private List<Person> getPersonsAtAddress(String address) {
+    static List<Person> getPersonsAtAddress(String address) {
         List<Person> personAtAddress = new ArrayList<>();
         try {
-            personAtAddress = this.persons.values()
+            personAtAddress = persons.values()
                     .stream()
                     .filter(person -> address.equals(person.getAddress()))
                     .collect(Collectors.toList());
@@ -254,15 +257,15 @@ public class DataFilter {
         return personAtAddress;
     }
 
-    private List<String> getAddressesAtStation(int stationNumber) {
-        return this.fireStations.values()
+    static List<String> getAddressesAtStation(int stationNumber) {
+        return fireStations.values()
                 .stream()
                 .filter(station -> Integer.parseInt(station.getStation()) == stationNumber)
                 .map(Firestation::getAddress)
                 .collect(Collectors.toList());
     }
 
-    private int calculateAge(String birthDay) throws ParseException {
+    static int calculateAge(String birthDay) throws ParseException {
         SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.FRANCE);
         LocalDate birthDate = df.parse(birthDay).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         String todayString = df.format(new Date());

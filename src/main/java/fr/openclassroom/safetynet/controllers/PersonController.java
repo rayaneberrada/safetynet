@@ -7,14 +7,12 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import fr.openclassroom.safetynet.DAO.PersonDAO;
-import fr.openclassroom.safetynet.DAO.PersonDAOImpl;
 import fr.openclassroom.safetynet.beans.Person;
-import fr.openclassroom.safetynet.services.DataFilter;
+import fr.openclassroom.safetynet.DAO.FilterDAO;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -32,7 +30,7 @@ public class PersonController {
     PersonDAO personDAOimpl;
 
     @Autowired
-    DataFilter dataFilter;
+    FilterDAO filterDAO;
 
     @GetMapping(value = "/person")
     public String Person() throws JsonProcessingException {
@@ -40,23 +38,23 @@ public class PersonController {
     }
 
     @RequestMapping(value = "/communityEmail")
-    public Map<String, List<String>> personsEmailAtCity(String city) throws JsonProcessingException{
-        return dataFilter.getPersonsEmailInCity(city);
+    public Map<String, List<String>> personsEmailAtCity(String city) throws IOException {
+        return filterDAO.getPersonsEmailInCity(city);
     }
 
     @RequestMapping(value = "/personInfo")
-    public List<JsonNode> personInfo(String firstName, String lastName) throws JsonProcessingException, java.text.ParseException {
-        return dataFilter.getPersonFiltered(firstName, lastName);
+    public List<JsonNode> personInfo(String firstName, String lastName) throws IOException, java.text.ParseException {
+        return filterDAO.getPersonFiltered(firstName, lastName);
     }
 
     @RequestMapping(value = "/childAlert")
-    public Map<String, List> childsAtAddress(String address) throws java.text.ParseException, JsonProcessingException {
-        return dataFilter.countChildsAtAddress(address);
+    public Map<String, List> childsAtAddress(String address) throws java.text.ParseException, IOException {
+        return filterDAO.countChildsAtAddress(address);
     }
 
     @RequestMapping(value = "/fire")
     public Map<String, Object> PersonsAndMedicalRecordsAndStationNumberOfAddress(String address) throws JsonProcessingException {
-        return dataFilter.getPersonsMedicalRecordsAndStationNumberOfAddress(address);
+        return filterDAO.getPersonsMedicalRecordsAndStationNumberOfAddress(address);
     }
 
     @DeleteMapping("/person")

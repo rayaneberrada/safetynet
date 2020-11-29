@@ -1,14 +1,10 @@
 package fr.openclassroom.safetynet.controllers;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.openclassroom.safetynet.DAO.FirestationDAO;
 import fr.openclassroom.safetynet.beans.Firestation;
-import fr.openclassroom.safetynet.beans.Person;
-import fr.openclassroom.safetynet.services.DataFilter;
+import fr.openclassroom.safetynet.DAO.FilterDAO;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,23 +24,23 @@ public class FirestationController {
     FirestationDAO firestationDAO;
 
     @Autowired
-    DataFilter dataFilter;
+    FilterDAO filterDAO;
 
 
     @GetMapping(value = "/firestation")
-    public Map<String, Object> getFirestation(int stationNumber) throws java.text.ParseException, JsonProcessingException {
-            return dataFilter.countAdultAndChildPerStation(stationNumber);
+    public Map<String, Object> getFirestation(int stationNumber) throws java.text.ParseException, IOException {
+        return filterDAO.countAdultAndChildPerStation(stationNumber);
     }
 
     @RequestMapping(value = "/flood/stations")
     public Map<String, List<JsonNode>> PersonsAndMedicalRecordPerAddressPerStation(String[] stations) throws java.text.ParseException, JsonProcessingException {
-        return dataFilter.getPersonsAndMedicalRecordPerAddressPerStation(stations);
+        return filterDAO.getPersonsAndMedicalRecordPerAddressPerStation(stations);
     }
 
 
     @RequestMapping(value = "/phoneAlert")
     public Map<String, List<String>> getPersonsPhoneForStation(int firestation) throws java.text.ParseException, JsonProcessingException {
-        return dataFilter.getPhoneNumbersForStation(firestation);
+        return filterDAO.getPhoneNumbersForStation(firestation);
     }
 
     @DeleteMapping("/firestation")
