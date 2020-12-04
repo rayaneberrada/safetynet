@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class PersonDAOImpl implements PersonDAO{
+public class PersonDAOImpl implements PersonDAO {
 
     private static Logger logger = LoggerFactory.getLogger(PersonDAOImpl.class);
 
     public Map<String, Person> persons;
 
     @Autowired
-    public PersonDAOImpl(JsonFileDTO jsonFileDTO){
+    public PersonDAOImpl(JsonFileDTO jsonFileDTO) {
         try {
             this.persons = jsonFileDTO.getPersons();
             logger.info("Classe de gestion des personnes initialisée");
@@ -37,9 +37,9 @@ public class PersonDAOImpl implements PersonDAO{
     }
 
     @Override
-    public List<Person> updatePerson(Person personToUpdate){
-        for(Person person: this.persons.values()) {
-            if(personToUpdate.getFirstName().equals(person.getFirstName())
+    public List<Person> updatePerson(Person personToUpdate) {
+        for (Person person : this.persons.values()) {
+            if (personToUpdate.getFirstName().equals(person.getFirstName())
                     && personToUpdate.getLastName().equals(person.getLastName())) {
                 person.setAddress(personToUpdate.getAddress());
                 person.setCity(personToUpdate.getCity());
@@ -52,11 +52,12 @@ public class PersonDAOImpl implements PersonDAO{
     }
 
     @Override
-    public List<Person> addPerson(Person person){
-        try{
+    public List<Person> addPerson(Person person) {
+        logger.info(String.valueOf(person.getFirstName() + " " + person.getLastName()));
+        try {
             this.persons.put(person.getFirstName() + " " + person.getLastName(), person);
             logger.info(person.getFirstName() + " " + person.getLastName() + " a bien été ajouté");
-        }   catch(Exception e) {
+        } catch (Exception e) {
             logger.error("Impossible d'ajouter la personne envoyée", e);
         }
         return new ArrayList<>(this.persons.values());
