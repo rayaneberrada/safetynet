@@ -33,7 +33,7 @@ public class FirestationController {
     }
 
     @RequestMapping(value = "/flood/stations")
-    public Map<String, List<JsonNode>> PersonsAndMedicalRecordPerAddressPerStation(String[] stations) throws java.text.ParseException, JsonProcessingException {
+    public Map<String, List<JsonNode>> personsAndMedicalRecordPerAddressPerStation(String[] stations) throws java.text.ParseException, JsonProcessingException {
         return filterDAO.getPersonsAndMedicalRecordPerAddressPerStation(stations);
     }
 

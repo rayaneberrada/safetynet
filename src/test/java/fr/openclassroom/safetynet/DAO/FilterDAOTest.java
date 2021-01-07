@@ -125,7 +125,7 @@ public class FilterDAOTest {
     }
 
     @Test
-    public void countAdultAndChildPerStation() throws ParseException, JsonProcessingException {
+    public void countAdultAndChildPerStationTest() throws ParseException, JsonProcessingException {
         // GIVEN
         JsonNode johnJson = mapper.readTree("{ \"firstName\":\"John\", \"lastName\":\"Boyd\", \"address\":\"13 avenue de la République\",\"phone\":\"841-874-6512\"}");
 
@@ -155,7 +155,7 @@ public class FilterDAOTest {
     }
 
     @Test
-    public void getPhoneNumbersForStation() throws JsonProcessingException {
+    public void getPhoneNumbersForStationTest() throws JsonProcessingException {
         // GIVEN
         String jacobPhone = "841-874-6512";
         String tenleyPhone = "841-874-6513";
@@ -168,7 +168,7 @@ public class FilterDAOTest {
     }
 
     @Test
-    public void getPersonsMedicalRecordsAndStationNumberOfAddress() throws JsonProcessingException {
+    public void getPersonsMedicalRecordsAndStationNumberOfAddressTest() throws JsonProcessingException {
         // GIVEN
         JsonNode tenleyJson = mapper.readTree("{\"phone\":\"841-874-6512\",\"Tenley Boyd\":{\"medications\":[],\"allergies\":[\"peanut\"]}}");
         JsonNode jacobJson = mapper.readTree("{\"phone\":\"841-874-6513\",\"Jacob Boyd\":{\"medications\":[\"pharmacol:5000mg\",\"terazine:10mg\",\"noznazol:250mg\"],\"allergies\":[]}}");
@@ -182,7 +182,7 @@ public class FilterDAOTest {
     }
 
     @Test
-    public void getPersonsAndMedicalRecordPerAddressPerStation() throws JsonProcessingException, ParseException {
+    public void getPersonsAndMedicalRecordPerAddressPerStationTest() throws JsonProcessingException, ParseException {
         // GIVEN
         String[] myStringArray = {"1", "3"};
         JsonNode jacobJson = mapper.readTree("{\"firstName\":\"Jacob\",\"lastName\":\"Boyd\",\"phone\":\"841-874-6513\",\"Jacob Boyd\":{\"medications\":[\"pharmacol:5000mg\",\"terazine:10mg\",\"noznazol:250mg\"],\"allergies\":[]},\"âge: \":31}");
