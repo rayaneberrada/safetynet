@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+/** DAO managing operations to filter specific datas that can be from one or multiple beans */
 @Service
 public class FilterDAO {
 
@@ -46,6 +47,12 @@ public class FilterDAO {
         fireStations = jsonFileDTO.getFirestations();
     }
 
+    /**
+     * Method to filter person's email for people linving in a specific city
+     *
+     * @param city
+     * @return person's email
+     */
     public Map<String, List<String>> getPersonsEmailInCity(String city) throws JsonProcessingException {
         List<Person> personsAtCity = this.persons.values().stream().filter(person -> person.getCity().equals(city)).collect(Collectors.toList());
         logger.info("Persons in city: " + personsAtCity);
@@ -53,6 +60,13 @@ public class FilterDAO {
         return Map.of(city, personsEmail);
     }
 
+    /**
+     * Method to get a person information using it's firstname and lastname to find it
+     *
+     * @param firstName
+     * @param lastName
+     * @return person name, age, address, email and medical record
+     */
     public List<JsonNode> getPersonFiltered(String firstName, String lastName) throws JsonProcessingException, ParseException {
         FilterProvider personFilter = new SimpleFilterProvider().addFilter("personFilter", SimpleBeanPropertyFilter.filterOutAllExcept("address", "email"));
         FilterProvider medicalFilter = new SimpleFilterProvider().addFilter("medicalFilter", SimpleBeanPropertyFilter.filterOutAllExcept("medications", "allergies"));
@@ -75,6 +89,12 @@ public class FilterDAO {
         return personsJson;
     }
 
+    /**
+     * Method to count how many child and adult or covered by a specific station
+     *
+     * @param stationNumber
+     * @return persons informations over and under eighteen
+     */
     public Map<String, Object> countAdultAndChildPerStation(int stationNumber) throws ParseException, JsonProcessingException {
         HashMap<String, Object> adultAndChildPerStation = new HashMap<>();
         // Get address covered by a station
@@ -115,6 +135,12 @@ public class FilterDAO {
         return adultAndChildPerStation;
     }
 
+    /**
+     * Method to count how many child live at a specific address
+     *
+     * @param address
+     * @return firstname, lastname, age of every child and a list of other members
+     */
     public Map<String, List> countChildsAtAddress(String address) throws ParseException, JsonProcessingException {
         Map<String, List> childsAtAddress = new HashMap<>();
         List<JsonNode> childs = new ArrayList<>();
@@ -152,6 +178,12 @@ public class FilterDAO {
         return childsAtAddress;
     }
 
+    /**
+     * Method to get phone numbers for people covered by a station
+     *
+     * @param stationNumber
+     * @return phone numbers
+     */
     public Map<String, List<String>> getPhoneNumbersForStation(int stationNumber) throws JsonProcessingException {
         List<String> addresses = this.getAddressesAtStation(stationNumber);
         List<List<Person>> personsAtAdresses = addresses.stream().map(address -> this.getPersonsAtAddress(address)).collect(Collectors.toList());
@@ -165,6 +197,13 @@ public class FilterDAO {
         return Map.of("Firestation n°" + stationNumber, phoneNumbers);
     }
 
+    /**
+     * Method to get medical record of people living at an address and the station number covering
+     * the address
+     *
+     * @param address
+     * @return
+     */
     public Map<String, Object> getPersonsMedicalRecordsAndStationNumberOfAddress(String address) throws JsonProcessingException {
         //Modifier en utilisant des maps pour avoir une meilleure visibilitée
         Map<String, Object> personAndMedicalRecordsAndFirestation = new HashMap<>();
@@ -200,6 +239,11 @@ public class FilterDAO {
         return personAndMedicalRecordsAndFirestation;
     }
 
+    /**
+     * Method to get person's medical records for the addresses covered by one or mulitple stations
+     *
+     * @param stations
+     */
     public Map<String, List<JsonNode>> getPersonsAndMedicalRecordPerAddressPerStation(String[] stations) throws JsonProcessingException, ParseException {
         logger.info("Les stations requêtées sont: " + Arrays.asList(stations));
         Map<String, List<JsonNode>> PersonsAndMedicalRecordPerAddressPerStation = new HashMap<>();
@@ -226,6 +270,12 @@ public class FilterDAO {
         return PersonsAndMedicalRecordPerAddressPerStation;
     }
 
+    /**
+     * Method used to transform a list of Object into a list of JsonNode
+     *
+     * @param objectsToFilter
+     * @param filter
+     */
     static List<JsonNode> filterObjectsInJson(List objectsToFilter, FilterProvider filter) throws JsonProcessingException {
         List<JsonNode> objectsJson = new ArrayList<>();
         for (Object object : objectsToFilter) {
@@ -234,6 +284,12 @@ public class FilterDAO {
         return objectsJson;
     }
 
+    /**
+     * Method used to transform an Object into a JsonNode
+     *
+     * @param objectToFilter
+     * @param filter
+     */
     static JsonNode filterObjectInJson(Object objectToFilter, FilterProvider filter) throws JsonProcessingException {
         String objectJson = mapper.writer(filter)
                 .withDefaultPrettyPrinter()

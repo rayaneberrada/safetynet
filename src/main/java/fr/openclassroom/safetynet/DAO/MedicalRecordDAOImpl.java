@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/** Class managing crud methods for MedicalRecord related datas */
 @Repository
 public class MedicalRecordDAOImpl implements MedicalRecordDAO{
 
@@ -32,6 +33,14 @@ public class MedicalRecordDAOImpl implements MedicalRecordDAO{
         }
     }
 
+    /**
+     * This method take the record used in parameter and look for it in the datas using
+     * it's first name and last name of the person.
+     * Then replace the informations with the one sent in parameter.
+     *
+     * @param recordToUpdate
+     * @return all medical records datas in a list after modification
+     */
     @Override
     public List<MedicalRecord> updateMedicalRecord(MedicalRecord recordToUpdate){
         for(MedicalRecord medicalRecord: this.medicalRecords.values()) {
@@ -45,6 +54,14 @@ public class MedicalRecordDAOImpl implements MedicalRecordDAO{
         return new ArrayList<>(this.medicalRecords.values());
     }
 
+    /**
+     * This method take the record used in parameter and look for it in the datas using
+     * it's first name and last name of the person.
+     * Then add the informations to the one already existing.
+     *
+     * @param recordToAdd
+     * @return all medical records datas in a list after modification
+     */
     @Override
     public List<MedicalRecord> addMedicalRecord(MedicalRecord recordToAdd){
         try{
@@ -56,6 +73,14 @@ public class MedicalRecordDAOImpl implements MedicalRecordDAO{
         return new ArrayList<>(this.medicalRecords.values());
     }
 
+    /**
+     * This method take the record used in parameter and look for it in the datas using
+     * it's first name and last name of the person.
+     * Then delete the record if found.
+     *
+     * @param recordToDelete
+     * @return all medical records datas in a list after modification
+     */
     @Override
     public List<MedicalRecord> deleteMedicalRecord(MedicalRecord recordToDelete) {
         boolean deleted = this.medicalRecords.values().removeIf(person -> recordToDelete.getFirstName().equals(person.getFirstName())
@@ -69,6 +94,10 @@ public class MedicalRecordDAOImpl implements MedicalRecordDAO{
         return new ArrayList<>(this.medicalRecords.values());
     }
 
+    /**
+     *
+     * @return all medical records datas
+     */
     @Override
     public List<MedicalRecord> getMedicalRecords() {
         return new ArrayList<>(this.medicalRecords.values());

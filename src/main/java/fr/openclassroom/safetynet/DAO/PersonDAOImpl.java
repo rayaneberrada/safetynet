@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/** Class managing crud methods for Person related datas */
 @Repository
 public class PersonDAOImpl implements PersonDAO {
 
@@ -31,11 +32,22 @@ public class PersonDAOImpl implements PersonDAO {
         }
     }
 
+    /**
+     *
+     * @return all persons datas in a list
+     */
     @Override
     public List<Person> getPersons() {
         return new ArrayList<>(this.persons.values());
     }
 
+    /**
+     * This method take the person used in parameter and look for it in the datas using
+     * it's first name and last name. Then replace the informations with the one sent in parameter.
+     *
+     * @param personToUpdate
+     * @return all persons datas in a list after modification
+     */
     @Override
     public List<Person> updatePerson(Person personToUpdate) {
         for (Person person : this.persons.values()) {
@@ -51,6 +63,13 @@ public class PersonDAOImpl implements PersonDAO {
         return new ArrayList<>(this.persons.values());
     }
 
+    /**
+     * This method take the person used in parameter and look for it in the datas using
+     * it's first name and last name. Then add the informations to the ones already existing.
+     *
+     * @param person
+     * @return all persons datas in a list after modification
+     */
     @Override
     public List<Person> addPerson(Person person) {
         logger.info(String.valueOf(person.getFirstName() + " " + person.getLastName()));
@@ -63,6 +82,13 @@ public class PersonDAOImpl implements PersonDAO {
         return new ArrayList<>(this.persons.values());
     }
 
+    /**
+     * This method take the person used in parameter and look for it in the datas using
+     * it's first name and last name. Then delete the informations if the person exist.
+     *
+     * @param personToDelete
+     * @return all persons datas in a list after modification
+     */
     @Override
     public List<Person> deletePerson(Person personToDelete) {
         boolean deleted = this.persons.values().removeIf(person -> personToDelete.getFirstName().equals(person.getFirstName())

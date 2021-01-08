@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/** Class managing crud methods for Firestation related datas */
 @Repository
 public class FirestationDAOImpl implements FirestationDAO{
 
@@ -30,6 +31,13 @@ public class FirestationDAOImpl implements FirestationDAO{
         }
     }
 
+    /**
+     * This method take the statoin used in parameter and look for it in the datas using
+     * it's first address. Then modify the station with the new informations.
+     *
+     * @param stationUpdate
+     * @return all stations datas in a list after modification
+     */
     @Override
     public List<Firestation> updateFirestation(Firestation stationUpdate){
         for(Firestation firestation: this.firestations.values()) {
@@ -40,6 +48,13 @@ public class FirestationDAOImpl implements FirestationDAO{
         return new ArrayList<>(this.firestations.values());
     }
 
+    /**
+     * This method take the station used in parameter and look for it in the datas using
+     * it's address. Then add the station to the already existing ones.
+     *
+     * @param stationToAdd
+     * @return all stations datas in a list after modification
+     */
     @Override
     public List<Firestation> addFirestation(Firestation stationToAdd){
         try {
@@ -51,6 +66,13 @@ public class FirestationDAOImpl implements FirestationDAO{
         return new ArrayList<>(this.firestations.values());
     }
 
+    /**
+     * This method take the station used in parameter and look for it in the datas using
+     * it's address. Then delete the station if found.
+     *
+     * @param stationToDelete
+     * @return all stations datas in a list after modification
+     */
     @Override
     public List<Firestation> deleteFirestation(Firestation stationToDelete) {
         boolean deleted = this.firestations.values().removeIf(firestation -> stationToDelete.getAddress().equals(firestation.getAddress()));
@@ -63,6 +85,10 @@ public class FirestationDAOImpl implements FirestationDAO{
         return new ArrayList<>(this.firestations.values());
     }
 
+    /**
+     *
+     * @return all stations datas
+     */
     @Override
     public List<Firestation> getFirestations() {
         return new ArrayList<>(this.firestations.values());

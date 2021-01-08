@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+/** Controller exposing routes managing crud operations on medical records */
 @RestController
 public class MedicalRecordController {
 
@@ -27,26 +28,81 @@ public class MedicalRecordController {
     @Autowired
     MedicalRecordDAO medicalRecordDAOImpl;
 
+    /**
+     * Route to ask all medical records available
+     *
+     * @return all MedicalRecord
+     */
     @GetMapping(value = "/medicalrecord")
-    public String getMedicalRecords() throws JsonProcessingException {
-        return  mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.getMedicalRecords());
+    public String getMedicalRecords() {
+        logger.info("http://localhost:8080/medicalrecord");
+        String medicalRecord = null;
+        try {
+            medicalRecord = mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.getMedicalRecords());
+            logger.info(medicalRecord);
+        }   catch (Exception e) {
+            logger.error("Request failed. Exception error is: " + e);
+        }
+        return medicalRecord;
     }
 
+    /**
+     * Route to remove a medical record from datas
+     *
+     * @param medicalRecord
+     * @return medical records after deletion
+     */
     @DeleteMapping("/medicalrecord")
-    public String removePerson(@RequestBody MedicalRecord medicalRecord) throws JsonProcessingException {
+    public String removePerson(@RequestBody MedicalRecord medicalRecord) {
+        logger.info("http://localhost:8080/medicalrecord");
         logger.info(String.valueOf(medicalRecord));
-        return mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.deleteMedicalRecord(medicalRecord));
+        String medicalRecordLeft = null;
+        try {
+            medicalRecordLeft = mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.deleteMedicalRecord(medicalRecord));
+            logger.info(medicalRecordLeft);
+        }   catch (Exception e) {
+            logger.error("Request failed. Exception error is: " + e);
+        }
+        return medicalRecordLeft;
     }
 
+    /**
+     * Route to add a medical record in datas
+     *
+     * @param medicalRecord
+     * @return medical records after adding the record
+     */
     @PostMapping("/medicalrecord")
-    public String addPerson(@RequestBody MedicalRecord medicalRecord) throws IOException, ParseException {
+    public String addPerson(@RequestBody MedicalRecord medicalRecord) {
+        logger.info("http://localhost:8080/medicalrecord");
         logger.info(String.valueOf(medicalRecord));
-        return  mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.addMedicalRecord(medicalRecord));
+        String allMedicalRecord = null;
+        try {
+            allMedicalRecord = mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.addMedicalRecord(medicalRecord));
+            logger.info(allMedicalRecord);
+        }   catch (Exception e) {
+            logger.error("Request failed. Exception error is: " + e);
+        }
+        return allMedicalRecord;
     }
 
+    /**
+     * Route to modify a medical record in datas
+     *
+     * @param medicalRecord
+     * @return medical records after modification
+     */
     @PutMapping("/medicalrecord")
-    public String updatePerson(@RequestBody MedicalRecord medicalRecord) throws IOException, ParseException {
+    public String updatePerson(@RequestBody MedicalRecord medicalRecord) {
+        logger.info("http://localhost:8080/medicalrecord");
         logger.info(String.valueOf(medicalRecord));
-        return  mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.updateMedicalRecord(medicalRecord));
+        String allMedicalRecord = null;
+        try {
+            allMedicalRecord = mapper.writer(medicalFilter).withDefaultPrettyPrinter().writeValueAsString(medicalRecordDAOImpl.updateMedicalRecord(medicalRecord));
+            logger.info(allMedicalRecord);
+        }   catch (Exception e) {
+            logger.error("Request failed. Exception error is: " + e);
+        }
+        return allMedicalRecord;
     }
 }
