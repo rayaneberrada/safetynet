@@ -55,7 +55,7 @@ public class FirestationController {
      * @param stations can accept one or more station number ex: ?stations=1&stations=2
      * @return persons with their lastname, age, phone number and medical record
      */
-    @RequestMapping(value = "/flood/stations")
+    @GetMapping(value = "/flood/stations")
     public Map<String, List<JsonNode>> personsAndMedicalRecordPerAddressPerStation(String[] stations) {
         String parameters = String.join("&", stations);
         logger.info("http://localhost:8080/flood/stations?" + parameters);
@@ -75,7 +75,7 @@ public class FirestationController {
      * @param stationNumber
      * @return list of phone number
      */
-    @RequestMapping(value = "/phoneAlert")
+    @GetMapping(value = "/phoneAlert")
     public Map<String, List<String>> getPersonsPhoneForStation(int stationNumber) {
         Map<String, List<String>> phoneNumbers = null;
         logger.info("http://localhost:8080/phoneAlert?stationNumber" + stationNumber);

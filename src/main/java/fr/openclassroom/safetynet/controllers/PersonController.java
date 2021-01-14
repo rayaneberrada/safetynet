@@ -39,7 +39,7 @@ public class PersonController {
      * @return all persons
      */
     @GetMapping(value = "/person")
-    public String Person() {
+    public String getPerson() {
         logger.info("http://localhost:8080/person");
         String persons = null;
         try {
@@ -57,7 +57,7 @@ public class PersonController {
      * @param city
      * @return persons emails in city
      */
-    @RequestMapping(value = "/communityEmail")
+    @GetMapping(value = "/communityEmail")
     public Map<String, List<String>> personsEmailAtCity(String city) {
         logger.info("http://localhost:8080/communityEmail?city=" + city);
         Map<String, List<String>> personEmails = null;
@@ -77,8 +77,8 @@ public class PersonController {
      * @param lastName
      * @return a list of persons infos
      */
-    @RequestMapping(value = "/personInfo")
-    public List<JsonNode> personInfo(String firstName, String lastName) {
+    @GetMapping(value = "/personInfo")
+    public List<JsonNode> getPersonInfo(String firstName, String lastName) {
         logger.info("http://localhost:8080/personInfo?firstName=" + firstName + "&lastName=" + lastName);
         List<JsonNode> persons = null;
         try {
@@ -96,8 +96,8 @@ public class PersonController {
      * @param address
      * @return map containing informations for members and childs
      */
-    @RequestMapping(value = "/childAlert")
-    public Map<String, List> childsAtAddress(String address) {
+    @GetMapping(value = "/childAlert")
+    public Map<String, List> getChildsAtAddress(String address) {
         logger.info("http://localhost:8080/childAlert?address=" + address);
         Map<String, List> childs = null;
         try {
@@ -114,8 +114,8 @@ public class PersonController {
      * @param address
      * @return Map listing people informations at address(name, phone, age, medical record) and firestation number
      */
-    @RequestMapping(value = "/fire")
-    public Map<String, Object> PersonsAndMedicalRecordsAndStationNumberOfAddress(String address) {
+    @GetMapping(value = "/fire")
+    public Map<String, Object> getPersonsAndMedicalRecordsAndStationNumberOfAddress(String address) {
         logger.info("http://localhost:8080/fire?address=" + address);
         Map<String, Object> personsAndRecords = null;
         try {
