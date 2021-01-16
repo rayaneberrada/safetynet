@@ -12,6 +12,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class MedicalRecordController {
      *
      * @return all MedicalRecord
      */
-    @GetMapping(value = "/medicalrecord")
+    @GetMapping(value = "/medicalrecord", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getMedicalRecords() {
         logger.info("http://localhost:8080/medicalrecord");
         String medicalRecord = null;
@@ -52,7 +53,7 @@ public class MedicalRecordController {
      * @param medicalRecord
      * @return medical records after deletion
      */
-    @DeleteMapping("/medicalrecord")
+    @DeleteMapping(value = "/medicalrecord", produces = MediaType.APPLICATION_JSON_VALUE)
     public String removePerson(@RequestBody MedicalRecord medicalRecord) {
         logger.info("http://localhost:8080/medicalrecord");
         logger.info(String.valueOf(medicalRecord));
@@ -72,7 +73,7 @@ public class MedicalRecordController {
      * @param medicalRecord
      * @return medical records after adding the record
      */
-    @PostMapping("/medicalrecord")
+    @PostMapping(value = "/medicalrecord", produces = MediaType.APPLICATION_JSON_VALUE)
     public String addPerson(@RequestBody MedicalRecord medicalRecord) {
         logger.info("http://localhost:8080/medicalrecord");
         logger.info(String.valueOf(medicalRecord));
@@ -92,7 +93,7 @@ public class MedicalRecordController {
      * @param medicalRecord
      * @return medical records after modification
      */
-    @PutMapping("/medicalrecord")
+    @PutMapping(value = "/medicalrecord", produces = MediaType.APPLICATION_JSON_VALUE)
     public String updatePerson(@RequestBody MedicalRecord medicalRecord) {
         logger.info("http://localhost:8080/medicalrecord");
         logger.info(String.valueOf(medicalRecord));

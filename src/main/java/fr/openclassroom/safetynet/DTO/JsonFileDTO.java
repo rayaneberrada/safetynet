@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-@Configuration
+/** Singleton used to store the datas from data.json. Datas will be restored to normal every time the app is reloaded
+ *  because only datas stored in JsonFileDTO are modified by the app and never datas stored inside data.json.
+ * */
+@Repository
 public class JsonFileDTO {
 
     private static Logger logger = LoggerFactory.getLogger(JsonFileDTO.class);
@@ -35,6 +38,12 @@ public class JsonFileDTO {
     private static String pathToFile = "data.json";
     private JSONObject jsonObject;
 
+    /**
+     * This method make sure that if JsonFileDTO hasn't been instantiated the constructor is called and
+     * return the instance of the class.
+     *
+     * @return an instance of JsonFileDTO
+     */
     @Bean
     public static JsonFileDTO getInstance(){
         if(JsonFileDTO.jsonFileDTOInstance== null) {
@@ -43,13 +52,7 @@ public class JsonFileDTO {
         return jsonFileDTOInstance;
     }
 
-    @Bean
-    public HttpTraceRepository htttpTraceRepository()
-    {
-        return new InMemoryHttpTraceRepository();
-    }
-
-    public JsonFileDTO(){
+    private JsonFileDTO(){
         try{
             FileReader reader = new FileReader(pathToFile);
             JSONParser jsonParser = new JSONParser();
@@ -64,6 +67,11 @@ public class JsonFileDTO {
         }
     }
 
+    /**
+     * Method parsing persons datas in json and returning it using the related bean
+     *
+     * @return informations about persons stored in data.json
+     */
     public Map<String, Person> getPersons() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(String.valueOf(jsonObject));
@@ -74,9 +82,19 @@ public class JsonFileDTO {
             persons.put(person.get("firstName").asText() + " " + person.get("lastname"), mapper.readValue(personJson, Person.class));
         }
         logger.info("Il y a " + persons.size() + " personnes dans la liste");
-        return persons;
+        if (persons.size() > 0) {
+            return persons;
+        }else{
+            logger.error("No persons parsed");
+            return null;
+        }
     }
 
+    /**
+     * Method parsing firestations datas in json and returning it using the related bean
+     *
+     * @return informations about firestations stored in data.json
+     */
     public Map<String, Firestation> getFirestations() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(String.valueOf(jsonObject));
@@ -87,9 +105,19 @@ public class JsonFileDTO {
             firestations.put(firestation.get("address").asText(), mapper.readValue(firestationJson, Firestation.class));
         }
         logger.info("Il y a " + firestations.size() + " firestations dans la liste");
-        return firestations;
+        if (firestations.size() > 0) {
+            return firestations;
+        }else{
+            logger.error("No firestation parsed");
+            return null;
+        }
     }
 
+    /**
+     * Method parsing medical record datas in json and returning it using the related bean
+     *
+     * @return informations about medical record stored in data.json
+     */
     public Map<String, MedicalRecord> getMedicalRecords() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(String.valueOf(jsonObject));

@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class PersonController {
      *
      * @return all persons
      */
-    @GetMapping(value = "/person")
+    @GetMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getPerson() {
         logger.info("http://localhost:8080/person");
         String persons = null;
@@ -133,7 +134,7 @@ public class PersonController {
      * @param person
      * @return people after deletion
      */
-    @DeleteMapping("/person")
+    @DeleteMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
     public String removePerson(@RequestBody Person person) {
         logger.info("http://localhost:8080/person");
         logger.info("body: " + person);
@@ -153,7 +154,7 @@ public class PersonController {
      * @param person
      * @return people after adding one
      */
-    @PostMapping("/person")
+    @PostMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
     public String addPerson(@RequestBody Person person) {
         logger.info("http://localhost:8080/person");
         logger.info("body: " + person);
@@ -173,7 +174,7 @@ public class PersonController {
      * @param person
      * @return people after modification
      */
-    @PutMapping("/person")
+    @PutMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
     public String updatePerson(@RequestBody Person person) {
         logger.info("http://localhost:8080/person");
         logger.info("body: " + person);

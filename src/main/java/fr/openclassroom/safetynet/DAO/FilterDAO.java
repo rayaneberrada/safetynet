@@ -55,7 +55,7 @@ public class FilterDAO {
      */
     public Map<String, List<String>> getPersonsEmailInCity(String city) throws JsonProcessingException {
         List<Person> personsAtCity = this.persons.values().stream().filter(person -> person.getCity().equals(city)).collect(Collectors.toList());
-        logger.info("Persons in city: " + personsAtCity);
+        logger.info("Persons in city: " + personsAtCity.size());
         List<String> personsEmail = personsAtCity.stream().map(person -> person.getEmail()).collect(Collectors.toList());
         return Map.of(city, personsEmail);
     }
